@@ -1,0 +1,127 @@
+{
+  "project_info": {
+    "project_number": "127970826239",
+    "firebase_url": "https://love-soda-flutter-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "love-soda-flutter",
+    "storage_bucket": "love-soda-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127970826239:android:8c0439acd3a74a746279ca",
+        "android_client_info": {
+          "package_name": "com.example.daisy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127970826239-t09d11h13ngg6afohlpkmv5ibgpeek2s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.daisy",
+            "certificate_hash": "b96e250dbea29d29eb12a3301cc38d69cc39e3fc"
+          }
+        },
+        {
+          "client_id": "127970826239-e0803brf6224pbb4ilngssokjhhv913f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVwg4eWoWB2TwrGGEwKTyxHXwG8yZ78uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127970826239-3ieisq1nt4ljh5kv3fnot6brjhgabt0e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "127970826239-e30r1d86eir33i0b48952uue1se9siht.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.loveSoda"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127970826239:android:5398ff277e6b5c716279ca",
+        "android_client_info": {
+          "package_name": "com.example.love_soda"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127970826239-e0803brf6224pbb4ilngssokjhhv913f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVwg4eWoWB2TwrGGEwKTyxHXwG8yZ78uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127970826239-3ieisq1nt4ljh5kv3fnot6brjhgabt0e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "127970826239-e30r1d86eir33i0b48952uue1se9siht.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.loveSoda"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127970826239:android:2daccdba71a1eeaf6279ca",
+        "android_client_info": {
+          "package_name": "com.example.loveit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127970826239-e0803brf6224pbb4ilngssokjhhv913f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVwg4eWoWB2TwrGGEwKTyxHXwG8yZ78uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127970826239-3ieisq1nt4ljh5kv3fnot6brjhgabt0e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "127970826239-e30r1d86eir33i0b48952uue1se9siht.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.loveSoda"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

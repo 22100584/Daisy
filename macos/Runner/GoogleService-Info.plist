@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>127970826239-rlai02sa42mrvbro09odvo9rc4ti6qmu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.127970826239-rlai02sa42mrvbro09odvo9rc4ti6qmu</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBgM_ttBBJlul52-RzBT8rbqMnqm5XrNsQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>127970826239</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.daisy</string>
+	<key>PROJECT_ID</key>
+	<string>love-soda-flutter</string>
+	<key>STORAGE_BUCKET</key>
+	<string>love-soda-flutter.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:127970826239:ios:f9f99bc7e72edeea6279ca</string>
+	<key>DATABASE_URL</key>
+	<string>https://love-soda-flutter-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>
