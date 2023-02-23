@@ -87,6 +87,21 @@ flutter:
     - daisy.png
     - daeasyLogo.png
     - FAB.png
+    - Splashmove.gif
+    - onboarding1.png
+    - onboarding2.png
+    - onboarding3.png
+    - solve.png
+    - ErrorMessage.png
+    - error.png
+    - default.png
+    - waiting.png
+    - accepted.png
+    - invite.png
+    - Da-easy.png
+    - RealLogo.png
+    - TopLogo.png
+    - doubleLogo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -68,10 +68,14 @@ class SmallInfoProvider {
   static String? smallnameInFireStore;
   static String? smallplace;
   static String? smallplaceInFireStore;
+  static String? category;
+  static String? categoryInFireStore;
   static String? memo;
   static String? memoInFireStore;
   static String? bigInfoId;
   static String? bigInfoIdInFireStore;
+  static List? user_ids;
+  static List? user_idsInFireStore;
   static String? registerTime;
   static String? registerTimeInFireStore;
 }
@@ -100,17 +104,21 @@ class SmallInfo {
   final String? id;
   final String? smallname;
   final String? smallplace;
+  final String? category;
   final String? memo;
   final Timestamp? registerTime;
   final String? bigInfoId;
+  final List? user_ids;
 
   SmallInfo(
       {required this.id,
       required this.smallname,
       required this.smallplace,
+      required this.category,
       required this.memo,
       required this.registerTime,
-      required this.bigInfoId});
+      required this.bigInfoId,
+      required this.user_ids});
 
   factory SmallInfo.fromFirebase(
       QueryDocumentSnapshot<Map<String, dynamic>> docSnap) {
@@ -120,16 +128,20 @@ class SmallInfo {
       registerTime: snapshotData[registerTimeFieldName],
       smallname: snapshotData[smallnameFieldName],
       smallplace: snapshotData[smallplaceFieldName],
+      category: snapshotData[categoryFieldName],
       memo: snapshotData[memoFieldName],
       bigInfoId: snapshotData[bigInfoIdFieldName],
+      user_ids: snapshotData[user_idsFieldName],
     );
   }
 }
 
+const String user_idsFieldName = "user-ids";
 const String idFieldName = 'id';
 const String registerTimeFieldName = "register-time";
 const String smallnameFieldName = "smallname";
 const String smallplaceFieldName = "smallplace";
+const String categoryFieldName = 'category';
 const String memoFieldName = "memo";
 const String bigInfoIdFieldName = 'bigInfoId';
 

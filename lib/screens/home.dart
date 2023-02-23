@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daisy/config/info.dart';
 import 'package:daisy/screens/optionalInfo.dart';
 import 'package:daisy/screens/update_bIgInfo.dart';
+import 'package:daisy/screens/confirmedPageView.dart';
 
 String shareId = '';
 
@@ -72,19 +73,80 @@ class _DaisyPageState extends State<DaisyPage> {
             ],
           ),
           actions: [
-            TextButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                },
-                child: const Text("sign out")),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: ((context) => const GetPartnerIdPage())));
-                },
-                child: const Text("Enroll Partner")),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                              backgroundColor: const Color(0xffFAFCFF),
+                              title: const Text(
+                                "로그아웃 하시겠습니까?",
+                                style: TextStyle(
+                                  fontFamily: 'seoul_EB',
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff131A1E),
+                                ),
+                              ),
+                              content: const Text(
+                                "정말로 로그아웃 하시겠습니까?",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xff737779)),
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(
+                                          0xffFFFBEE), // Background color
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(ctx).pop(false);
+                                    },
+                                    child: const Text(
+                                      '취소',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xff131A1E),
+                                      ),
+                                    )),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(
+                                          0xffFFE171), // Background color
+                                    ),
+                                    onPressed: () {
+                                      FirebaseAuth.instance.signOut();
+                                      Navigator.of(ctx).pop(true);
+                                    },
+                                    child: const Text(
+                                      '확인',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xff131A1E),
+                                      ),
+                                    )),
+                              ],
+                            ));
+                  },
+                  icon: const Icon(
+                    Icons.logout_outlined,
+                    color: Color(0xff505253),
+                  )),
+            ),
+            // TextButton(
+            //     onPressed: () {
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: ((context) => const GetPartnerIdPage())));
+            //     },
+            //     child: const Text("Enroll Partner")),
           ],
           backgroundColor: const Color(0xffEDF4F9),
         ),
@@ -179,16 +241,46 @@ class _DaisyPageState extends State<DaisyPage> {
                                 return showDialog(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
-                                          title: const Text("Please Confirm!"),
+                                          backgroundColor:
+                                              const Color(0xffFAFCFF),
+                                          title: const Text(
+                                            "삭제하시겠습니까?",
+                                            style: TextStyle(
+                                              fontFamily: 'seoul_EB',
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color(0xff131A1E),
+                                            ),
+                                          ),
                                           content: const Text(
-                                              "Are you sure you want to delete?"),
+                                            "정말로 데이트를 삭제하시겠습니까?",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w400,
+                                                color: Color(0xff737779)),
+                                          ),
                                           actions: [
                                             ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(
+                                                      0xffFFFBEE), // Background color
+                                                ),
                                                 onPressed: () {
                                                   Navigator.of(ctx).pop(false);
                                                 },
-                                                child: const Text('cancel')),
+                                                child: const Text(
+                                                  '취소',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Color(0xff131A1E),
+                                                  ),
+                                                )),
                                             ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(
+                                                      0xffFFE171), // Background color
+                                                ),
                                                 onPressed: () {
                                                   Navigator.of(ctx).pop(true);
                                                   shareId = snapshot.data!
@@ -206,54 +298,100 @@ class _DaisyPageState extends State<DaisyPage> {
                                                       onError: (e) => print(
                                                           "Error updating document $e"));
                                                 },
-                                                child: const Text('Confirm')),
+                                                child: const Text(
+                                                  '확인',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Color(0xff131A1E),
+                                                  ),
+                                                )),
                                           ],
                                         ));
                               } else if (direction ==
                                   DismissDirection.startToEnd) {
                                 return showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                          title: const Text("Please Confirm!"),
-                                          content: const Text(
-                                              "Are you sure you want to update?"),
-                                          actions: [
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.of(ctx).pop(false);
-                                                },
-                                                child: const Text('cancel')),
-                                            ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.of(ctx).pop(true);
-                                                  Navigator.push(context,
-                                                      MaterialPageRoute(
-                                                    builder: (context) {
-                                                      shareId = snapshot.data!
-                                                              .toList()[index]
-                                                              .id ??
-                                                          '';
-                                                      return const updateInfo();
-                                                    },
-                                                  ));
-                                                },
-                                                child: const Text('Update')),
-                                          ],
-                                        ));
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    backgroundColor: const Color(0xffFAFCFF),
+                                    title: const Text(
+                                      "수정하시겠습니까?",
+                                      style: TextStyle(
+                                        fontFamily: 'seoul_EB',
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xff131A1E),
+                                      ),
+                                    ),
+                                    content: const Text(
+                                      "정말로 데이트를 수정하시겠습니까?",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff737779)),
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                                0xffFFFBEE), // Background color
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop(false);
+                                          },
+                                          child: const Text(
+                                            '취소',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color(0xff131A1E),
+                                            ),
+                                          )),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                                0xffFFE171), // Background color
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop(true);
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                              builder: (context) {
+                                                shareId = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                return const updateInfo();
+                                              },
+                                            ));
+                                          },
+                                          child: const Text(
+                                            '확인',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color(0xff131A1E),
+                                            ),
+                                          )),
+                                    ],
+                                  ),
+                                );
                               }
                             },
                             onDismissed: (direction) {
                               setState(() {
-                                shareId =
-                                    snapshot.data!.toList()[index].id ?? '';
+                                if (direction == DismissDirection.endToStart) {
+                                  shareId =
+                                      snapshot.data!.toList()[index].id ?? '';
 
-                                final docRef = FirebaseFirestore.instance
-                                    .collection("bigInfo")
-                                    .doc(shareId);
-                                docRef.delete().then(
-                                    (doc) => print("Document deleted"),
-                                    onError: (e) =>
-                                        print("Error updating document $e"));
+                                  final docRef = FirebaseFirestore.instance
+                                      .collection("bigInfo")
+                                      .doc(shareId);
+                                  docRef.delete().then(
+                                      (doc) => print("Document deleted"),
+                                      onError: (e) =>
+                                          print("Error updating document $e"));
+                                }
                               });
                             },
                             child: GestureDetector(
@@ -435,22 +573,89 @@ class _DaisyPageState extends State<DaisyPage> {
                                           child: Row(
                                             children: [
                                               const Icon(Icons.place),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 8.0),
-                                                child: Text(
-                                                  snapshot.data!
-                                                          .toList()[index]
-                                                          .bigplace ??
-                                                      "no place",
-                                                  style: const TextStyle(
-                                                      fontFamily: 'seoul',
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Color(0xff353C49)),
+                                              Expanded(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    snapshot.data!
+                                                            .toList()[index]
+                                                            .bigplace ??
+                                                        "no place",
+                                                    style: const TextStyle(
+                                                        fontFamily: 'seoul',
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color:
+                                                            Color(0xff353C49)),
+                                                  ),
                                                 ),
                                               ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) {
+                                                          BigInfoProvider
+                                                              .bigname = snapshot
+                                                                  .data!
+                                                                  .toList()[
+                                                                      index]
+                                                                  .bigname ??
+                                                              "no name";
+                                                          BigInfoProvider
+                                                                  .bigdateStart =
+                                                              snapshot.data!
+                                                                  .toList()[
+                                                                      index]
+                                                                  .bigdateStart;
+                                                          BigInfoProvider
+                                                                  .bigdateEnd =
+                                                              snapshot.data!
+                                                                  .toList()[
+                                                                      index]
+                                                                  .bigdateEnd;
+                                                          BigInfoProvider
+                                                                  .bigplace =
+                                                              snapshot.data!
+                                                                  .toList()[
+                                                                      index]
+                                                                  .bigplace;
+                                                          BigInfoProvider.id =
+                                                              snapshot.data!
+                                                                  .toList()[
+                                                                      index]
+                                                                  .id;
+                                                          return cofirmedView(
+                                                            name: BigInfoProvider
+                                                                    .bigname ??
+                                                                '',
+                                                            dateS: BigInfoProvider
+                                                                    .bigdateStart ??
+                                                                "",
+                                                            dateE: BigInfoProvider
+                                                                    .bigdateEnd ??
+                                                                "",
+                                                            place: BigInfoProvider
+                                                                    .bigplace ??
+                                                                '',
+                                                            shareId:
+                                                                BigInfoProvider
+                                                                        .id ??
+                                                                    '',
+                                                          );
+                                                        },
+                                                      ),
+                                                    );
+                                                  },
+                                                  icon: const Icon(
+                                                      Icons.task_outlined)),
+                                              const SizedBox(
+                                                width: 15,
+                                              )
                                             ],
                                           ),
                                         )
@@ -577,7 +782,7 @@ class _TextFieldExampleState extends State<TextFieldExample> {
             const Expanded(
               child: Center(
                 child: Text(
-                  "새로운 데이트",
+                  "데이트 수정",
                   style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w400,

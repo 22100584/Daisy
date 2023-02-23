@@ -128,3 +128,27 @@ const TextStyle body1_4 = TextStyle(
   fontWeight: FontWeight.w700,
   color: Color(0xff737779),
 );
+
+// 22 Extra Bold
+const TextStyle SplashFont = TextStyle(
+  fontSize: 22,
+  fontFamily: 'Seoul_EB',
+  fontWeight: FontWeight.w800,
+  color: Color(0xff737779),
+);
+
+// 14 Extra Bold
+const TextStyle SplashFont2 = TextStyle(
+  fontSize: 14,
+  fontFamily: 'Seoul_EB',
+  fontWeight: FontWeight.w800,
+  color: Color(0xff737779),
+);
+
+//28 Extra Bold
+const TextStyle Title1_G = TextStyle(
+  fontSize: 28,
+  fontFamily: 'Seoul_EB',
+  fontWeight: FontWeight.w800,
+  color: Color(0xff737779),
+);

@@ -372,8 +372,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: isSignupScreen ? 30 : 110,
+              const SizedBox(
+                height: 30,
               ),
               Container(
                 padding: const EdgeInsets.all(15),
@@ -404,6 +404,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           'email': userEmail,
                           'user-id': user.uid,
                         });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => const DaisyPage())));
                       } catch (e) {
                         setState(() {
                           showSpinner = false;
@@ -460,8 +464,12 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 ),
               ),
               Column(
-                children: const [
-                  Text(
+                children: [
+                  if (!isSignupScreen)
+                    const SizedBox(
+                      height: 80,
+                    ),
+                  const Text(
                     "Date를 easy하게",
                     style: TextStyle(
                         fontFamily: 'seoul_CEB',
@@ -469,7 +477,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         fontWeight: FontWeight.w400,
                         color: Palette.textColor2),
                   ),
-                  Text(
+                  const Text(
                     "데이지",
                     style: TextStyle(
                         fontFamily: 'seoul_CEB',

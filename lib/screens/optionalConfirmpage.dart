@@ -1,18 +1,15 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'add_smallInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daisy/config/info.dart';
 import 'package:daisy/screens/update_smallInfo.dart';
-import 'package:daisy/screens/optionalConfirmpage.dart';
 
 String id = '';
 String bigInfoid = '';
 
-class optionalInfo1 extends StatefulWidget {
-  const optionalInfo1({
+class optionalInfo2 extends StatefulWidget {
+  const optionalInfo2({
     Key? key,
     required this.name,
     required this.dateS,
@@ -27,10 +24,10 @@ class optionalInfo1 extends StatefulWidget {
   final String place;
   final String shareId;
   @override
-  State<optionalInfo1> createState() => _optionalInfo1State();
+  State<optionalInfo2> createState() => _optionalInfo2State();
 }
 
-class _optionalInfo1State extends State<optionalInfo1> {
+class _optionalInfo2State extends State<optionalInfo2> {
   UpdateDeleteItem? selectedMenu;
 
   @override
@@ -122,21 +119,9 @@ class _optionalInfo1State extends State<optionalInfo1> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) {
-                          return optionalInfo2(
-                            name: widget.name,
-                            dateS: widget.dateS,
-                            dateE: widget.dateE,
-                            place: widget.place,
-                            shareId: widget.shareId,
-                          );
-                        },
-                      ));
-                    },
+                    onPressed: () {},
                     child: const Text(
-                      "선택",
+                      "  ",
                       style: TextStyle(
                           fontFamily: 'seoul',
                           fontSize: 16,
@@ -154,37 +139,6 @@ class _optionalInfo1State extends State<optionalInfo1> {
           child: ListView(children: [
             Column(
               children: [
-                StreamBuilder(
-                  stream: FirebaseProvider.getAllInfos(),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                      case ConnectionState.active:
-                        {
-                          if (snapshot.data!.isEmpty) {
-                            return const Padding(
-                              padding: EdgeInsets.only(top: 200.0),
-                              child: Center(
-                                child: Text(
-                                  "  새 일정을  \n추가해주세요.",
-                                  style: TextStyle(
-                                      fontSize: 28,
-                                      fontFamily: 'seoul_EB',
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff737779)),
-                                ),
-                              ),
-                            );
-                          }
-                          return const SizedBox(
-                            height: 0,
-                          );
-                        }
-                      default:
-                        return const CircularProgressIndicator();
-                    }
-                  },
-                ),
                 StreamBuilder(
                   stream: FirebaseProvider0.getAllInfos(),
                   builder: (context, snapshot) {
@@ -314,6 +268,19 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                             ),
                                           ),
                                         ),
+                                        onDismissed: (direction) {
+                                          setState(() {
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
+                                          });
+                                        },
                                         confirmDismiss: (direction) async {
                                           if (direction ==
                                               DismissDirection.endToStart) {
@@ -499,74 +466,200 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                             );
                                           }
                                         },
-                                        onDismissed: (direction) {
-                                          setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -576,8 +669,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -587,113 +680,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -728,6 +725,7 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                 .copyWith(dividerColor: Colors.transparent),
                             child: ExpansionTile(
                               initiallyExpanded: true,
+                              iconColor: const Color(0xff1C1B1F),
                               title: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -1026,72 +1024,211 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                         },
                                         onDismissed: (direction) {
                                           setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
                                           });
                                         },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -1101,8 +1238,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -1112,113 +1249,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -1552,72 +1593,211 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                         },
                                         onDismissed: (direction) {
                                           setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
                                           });
                                         },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -1627,8 +1807,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -1638,113 +1818,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -1838,7 +1922,6 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                     } else if (gestureColor == 3) {
                                       selectColor = const Color(0xffFFE171);
                                     }
-
                                     return Padding(
                                       padding: const EdgeInsets.only(
                                           left: 30,
@@ -2079,72 +2162,211 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                         },
                                         onDismissed: (direction) {
                                           setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
                                           });
                                         },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -2154,8 +2376,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -2165,113 +2387,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -2605,72 +2731,211 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                         },
                                         onDismissed: (direction) {
                                           setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
                                           });
                                         },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -2680,8 +2945,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -2691,113 +2956,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -3131,72 +3300,211 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                         },
                                         onDismissed: (direction) {
                                           setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
                                           });
                                         },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -3206,8 +3514,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -3217,113 +3525,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -3657,72 +3869,211 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                         },
                                         onDismissed: (direction) {
                                           setState(() {
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              final docRef = FirebaseFirestore
-                                                  .instance
-                                                  .collection("smallInfo")
-                                                  .doc(id);
-                                              docRef.delete().then(
-                                                  (doc) =>
-                                                      print("Document deleted"),
-                                                  onError: (e) => print(
-                                                      "Error updating document $e"));
-                                            }
+                                            final docRef = FirebaseFirestore
+                                                .instance
+                                                .collection("smallInfo")
+                                                .doc(id);
+                                            docRef.delete().then(
+                                                (doc) =>
+                                                    print("Document deleted"),
+                                                onError: (e) => print(
+                                                    "Error updating document $e"));
                                           });
                                         },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.7),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 1.0,
-                                                  offset: const Offset(0,
-                                                      2), // changes position of shadow
-                                                ),
-                                              ],
-                                              color: selectColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                20, 0, 0, 15),
-                                            child: SizedBox(
-                                              width: 367,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                      title: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 20, 0, 0),
-                                                        child: Text(
-                                                          snapshot.data!
-                                                                  .toList()[
-                                                                      index]
-                                                                  .smallname ??
-                                                              "no name",
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'seoul_EB',
-                                                              fontSize: 24,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                  0xff353C49)),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (snapshot.data!
+                                                  .toList()[index]
+                                                  .user_ids!
+                                                  .contains(
+                                                      userProvider.userId)) {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayRemove(
+                                                          [userProvider.userId])
+                                                });
+                                              } else {
+                                                id = snapshot.data!
+                                                        .toList()[index]
+                                                        .id ??
+                                                    '';
+                                                final docRef = FirebaseFirestore
+                                                    .instance
+                                                    .collection("smallInfo")
+                                                    .doc(id);
+                                                docRef.update({
+                                                  'user-ids':
+                                                      FieldValue.arrayUnion(
+                                                          [userProvider.userId])
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.7),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 1.0,
+                                                    offset: const Offset(0,
+                                                        2), // changes position of shadow
+                                                  ),
+                                                ],
+                                                color: selectColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 15),
+                                              child: SizedBox(
+                                                width: 367,
+                                                child: Column(
+                                                  children: [
+                                                    ListTile(
+                                                        title: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 20, 0, 0),
+                                                          child: Text(
+                                                            snapshot.data!
+                                                                    .toList()[
+                                                                        index]
+                                                                    .smallname ??
+                                                                "no name",
+                                                            style: const TextStyle(
+                                                                fontFamily:
+                                                                    'seoul_EB',
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Color(
+                                                                    0xff353C49)),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
+                                                        subtitle: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Icon(
+                                                                Icons.place),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .toList()[
+                                                                            index]
+                                                                        .smallplace ??
+                                                                    "no place",
+                                                                style: const TextStyle(
+                                                                    fontFamily:
+                                                                        'seoul',
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    color: Color(
+                                                                        0xff353C49)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        trailing: PopupMenuButton<
+                                                                UpdateDeleteItem>(
+                                                            initialValue:
+                                                                selectedMenu,
+                                                            onSelected:
+                                                                (UpdateDeleteItem
+                                                                    item) {
+                                                              selectedMenu =
+                                                                  item;
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .update) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                                    id = snapshot
+                                                                            .data!
+                                                                            .toList()[index]
+                                                                            .id ??
+                                                                        '';
+                                                                    return UpdateSmallInfo(
+                                                                      shareId:
+                                                                          widget
+                                                                              .shareId,
+                                                                      smallId:
+                                                                          id,
+                                                                    );
+                                                                  },
+                                                                ));
+                                                              }
+                                                              if (selectedMenu ==
+                                                                  UpdateDeleteItem
+                                                                      .delete) {
+                                                                final docRef = FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "bigInfo")
+                                                                    .doc(widget
+                                                                        .shareId)
+                                                                    .collection(
+                                                                        'smallInfo')
+                                                                    .doc(id);
+                                                                docRef.delete().then(
+                                                                    (doc) => print(
+                                                                        "Document deleted"),
+                                                                    onError: (e) =>
+                                                                        print(
+                                                                            "Error updating document $e"));
+                                                              }
+                                                            },
+                                                            itemBuilder: ((context) =>
+                                                                <
+                                                                    PopupMenuEntry<
+                                                                        UpdateDeleteItem>>[
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .update,
+                                                                    child: Text(
+                                                                        'Update'),
+                                                                  ),
+                                                                  const PopupMenuItem<
+                                                                      UpdateDeleteItem>(
+                                                                    value: UpdateDeleteItem
+                                                                        .delete,
+                                                                    child: Text(
+                                                                        'Delete'),
+                                                                  ),
+                                                                ]))),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          8, 15, 0, 0),
+                                                      child: Row(
                                                         children: [
-                                                          const Icon(
-                                                              Icons.place),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -3732,8 +4083,8 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                               snapshot.data!
                                                                       .toList()[
                                                                           index]
-                                                                      .smallplace ??
-                                                                  "no place",
+                                                                      .memo ??
+                                                                  "no memo",
                                                               style: const TextStyle(
                                                                   fontFamily:
                                                                       'seoul',
@@ -3743,115 +4094,17 @@ class _optionalInfo1State extends State<optionalInfo1> {
                                                                           .w400,
                                                                   color: Color(
                                                                       0xff353C49)),
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
-                                                      trailing: PopupMenuButton<
-                                                              UpdateDeleteItem>(
-                                                          initialValue:
-                                                              selectedMenu,
-                                                          onSelected:
-                                                              (UpdateDeleteItem
-                                                                  item) {
-                                                            selectedMenu = item;
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .update) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  id = snapshot
-                                                                          .data!
-                                                                          .toList()[
-                                                                              index]
-                                                                          .id ??
-                                                                      '';
-                                                                  return UpdateSmallInfo(
-                                                                    shareId: widget
-                                                                        .shareId,
-                                                                    smallId: id,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                            if (selectedMenu ==
-                                                                UpdateDeleteItem
-                                                                    .delete) {
-                                                              final docRef =
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'smallInfo')
-                                                                      .doc(id);
-                                                              log(docRef
-                                                                  .toString());
-                                                              docRef.delete().then(
-                                                                  (doc) => print(
-                                                                      "Document deleted"),
-                                                                  onError: (e) =>
-                                                                      print(
-                                                                          "Error updating document $e"));
-                                                            }
-                                                          },
-                                                          itemBuilder: ((context) =>
-                                                              <
-                                                                  PopupMenuEntry<
-                                                                      UpdateDeleteItem>>[
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .update,
-                                                                  child: Text(
-                                                                      'Update'),
-                                                                ),
-                                                                const PopupMenuItem<
-                                                                    UpdateDeleteItem>(
-                                                                  value:
-                                                                      UpdateDeleteItem
-                                                                          .delete,
-                                                                  child: Text(
-                                                                      'Delete'),
-                                                                ),
-                                                              ]))),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(8, 15, 0, 0),
-                                                    child: Row(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  left: 8.0),
-                                                          child: Text(
-                                                            snapshot.data!
-                                                                    .toList()[
-                                                                        index]
-                                                                    .memo ??
-                                                                "no memo",
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'seoul',
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: Color(
-                                                                    0xff353C49)),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -3905,6 +4158,8 @@ class FirebaseProvider {
             snapshot.docs.map((docSnap) => SmallInfo.fromFirebase(docSnap)));
   }
 }
+
+enum UpdateDeleteItem { update, delete }
 
 class FirebaseProvider0 {
   static final smallInfoCollection =
@@ -4017,8 +4272,6 @@ class FirebaseProvider6 {
             snapshot.docs.map((docSnap) => SmallInfo.fromFirebase(docSnap)));
   }
 }
-
-enum UpdateDeleteItem { update, delete }
 
 final List<String> _Category = [
   "식사",
